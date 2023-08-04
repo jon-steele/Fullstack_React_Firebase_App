@@ -82,6 +82,12 @@ const Form = () => {
     const updatedUsers = [...users];
     updatedUsers.splice(index, 1);
     setUsers(updatedUsers);
+    
+    reset(); // Reset the form to prevent association error
+
+    if (editIndex === index) {
+        setEditIndex(-1);
+      }
   };
 
   // Function to handle user edit
