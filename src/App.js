@@ -6,9 +6,11 @@ import { FormProvider, useForm } from "react-hook-form";
 const App = () => {
   const methods = useForm();
   return (
-    <FormProvider {...methods}>
-      <Form />
-    </FormProvider>
+    <div>
+      <FormProvider {...methods}>
+        <Form />
+      </FormProvider>
+    </div>
   );
 };
 

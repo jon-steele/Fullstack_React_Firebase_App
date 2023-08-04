@@ -25,99 +25,92 @@ import {
 } from "@coreui/react";
 
 const Form = () => {
-  const { handleSubmit, control, errors, reset, watch, setValue } = useForm();
-  const [users, setUsers] = useState([]);
-  const [editIndex, setEditIndex] = useState(-1);
-  const [country, setCountry] = useState("Canada");
-  const watchCountry = watch("country", "Canada");
-
-  useEffect(() => {
-    setCountry(watchCountry);
-
-    const usersCollectionRef = collection(db, "users");
-    const unsubscribe = onSnapshot(usersCollectionRef, (snapshot) => {
-      const data = snapshot.docs.map((doc) => {
-        const data = doc.data();
-        // Convert Firestore Timestamp to JavaScript Date object
-        if (data.DOB && typeof data.DOB.toDate === "function") {
-          data.DOB = data.DOB.toDate().toISOString().split("T")[0];
-        }
-        return { id: doc.id, ...data };
+    const { handleSubmit, control, formState: { errors }, reset, watch, setValue } = useForm();
+    const [users, setUsers] = useState([]);
+    const [editIndex, setEditIndex] = useState(-1);
+    const [country, setCountry] = useState("Canada");
+    const watchCountry = watch("country", "Canada");
+  
+    useEffect(() => {
+      setCountry(watchCountry);
+  
+      const usersCollectionRef = collection(db, "users");
+      const unsubscribe = onSnapshot(usersCollectionRef, (snapshot) => {
+        const data = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          if (data.DOB && typeof data.DOB.toDate === "function") {
+            data.DOB = data.DOB.toDate().toISOString().split("T")[0];
+          }
+          return { id: doc.id, ...data };
+        });
+        setUsers(data);
       });
-      setUsers(data);
-    });
-
-    // Clean up the subscription on unmount
-    return () => unsubscribe();
-  }, [watchCountry]);
-
-  // Function that handles submitting new data
-  const onSubmit = async (data) => {
-    // Convert date string to JavaScript Date, then to Firestore Timestamp
-    let dob = new Date(`${data.dateOfBirth}T00:00:00Z`);
-    dob.setHours(dob.getHours() + 8); // Conversion buffer for Firestore
-    data.dateOfBirth = Timestamp.fromDate(dob);
-
-    // Ensure `country` and `city` are objects with `value` and `label` properties
-    if (typeof data.country === "string") {
-      data.country = { value: data.country, label: data.country };
-    }
-    if (typeof data.city === "string") {
-      data.city = { value: data.city, label: data.city };
-    }
-
-    const usersCollectionRef = collection(db, "users");
-
-    if (editIndex !== -1) {
-      // If we are editing an existing user, update the user in Firestore
-      const docRef = doc(db, "users", users[editIndex].id);
-      await updateDoc(docRef, data);
-    } else {
-      // If we are not editing, add the new user to Firestore
-      await addDoc(usersCollectionRef, data);
-    }
-
-    reset(); // Reset the form after submission
-    setEditIndex(-1); // Reset editIndex after updating
-  };
-
-  // Function to handle user deletion
-  const handleDelete = async (index) => {
-    // Delete the user from Firestore
-    const userToDelete = users[index];
-    const userDocRef = doc(db, "users", userToDelete.id);
-    await deleteDoc(userDocRef);
-
-    // Delete the user from the local state
-    const updatedUsers = [...users];
-    updatedUsers.splice(index, 1);
-    setUsers(updatedUsers);
-
-    reset(); // Reset the form to prevent association error
-
-    if (editIndex === index) {
-      setEditIndex(-1);
-    }
-  };
-
-  // Function to handle user edit
-  const handleEdit = (index) => {
-    setEditIndex(index);
-    const userToEdit = users[index];
-
-    // Convert Firestore Timestamp to JavaScript Date, then format as 'YYYY-MM-DD'
-    const dob = userToEdit.dateOfBirth.toDate().toISOString().split("T")[0];
-
-    // Create a new object that contains only the fields in your form
-    const userFormValues = {
-      name: userToEdit.name,
-      dateOfBirth: dob,
-      country: userToEdit.country,
-      city: userToEdit.city,
+  
+      return () => unsubscribe();
+    }, [watchCountry]);
+  
+    const onSubmit = async (data) => {
+      try {
+        let dob = new Date(`${data.dateOfBirth}T00:00:00Z`);
+        dob.setHours(dob.getHours() + 8);
+        data.dateOfBirth = Timestamp.fromDate(dob);
+  
+        if (typeof data.country === "string") {
+          data.country = { value: data.country, label: data.country };
+        }
+        if (typeof data.city === "string") {
+          data.city = { value: data.city, label: data.city };
+        }
+  
+        const usersCollectionRef = collection(db, "users");
+  
+        if (editIndex !== -1) {
+          const docRef = doc(db, "users", users[editIndex].id);
+          await updateDoc(docRef, data);
+        } else {
+          await addDoc(usersCollectionRef, data);
+        }
+  
+        reset();
+        setEditIndex(-1);
+      } catch (error) {
+        console.error("Error submitting form: ", error);
+      }
     };
-
-    reset(userFormValues);
-  };
+  
+    const handleDelete = async (index) => {
+      try {
+        const userToDelete = users[index];
+        const userDocRef = doc(db, "users", userToDelete.id);
+        await deleteDoc(userDocRef);
+  
+        const updatedUsers = [...users];
+        updatedUsers.splice(index, 1);
+        setUsers(updatedUsers);
+        reset();
+  
+        if (editIndex === index) {
+          setEditIndex(-1);
+        }
+      } catch (error) {
+        console.error("Error deleting user: ", error);
+      }
+    };
+  
+    const handleEdit = (index) => {
+      setEditIndex(index);
+      const userToEdit = users[index];
+      const dob = userToEdit.dateOfBirth.toDate().toISOString().split("T")[0];
+  
+      const userFormValues = {
+        name: userToEdit.name,
+        dateOfBirth: dob,
+        country: userToEdit.country,
+        city: userToEdit.city,
+      };
+  
+      reset(userFormValues);
+    };
 
   return (
     <div className="d-flex flex-column">
@@ -128,24 +121,24 @@ const Form = () => {
         <Controller
           name="name"
           control={control}
+          rules={{ required: "Name is required" }}
           defaultValue=""
           render={({ field }) => (
-            <CFormInput className="m-2" {...field} placeholder="Name" />
+            <CFormInput className="my-2" {...field} placeholder="Name" />
           )}
         />
-        {errors !== undefined && errors.name && <p>{errors.name.message}</p>}
+        {errors.name && <p>{errors.name.message}</p>}
 
         <Controller
           name="dateOfBirth"
           control={control}
+          rules={{ required: "Date of birth is required" }}
           defaultValue=""
           render={({ field }) => (
-            <CFormInput className="m-2" type="date" {...field} />
+            <CFormInput className="my-2" type="date" {...field} />
           )}
         />
-        {errors !== undefined && errors.dateOfBirth && (
-          <p>{errors.dateOfBirth.message}</p>
-        )}
+        {errors.dateOfBirth && (<p>{errors.dateOfBirth.message}</p>)}
 
         <Controller
           name="country"
@@ -153,7 +146,7 @@ const Form = () => {
           defaultValue={{ value: "CA", label: "Canada" }}
           render={({ field }) => (
             <Select
-              className="m-2"
+              className="my-2 w-100"
               {...field}
               options={[
                 { value: "CA", label: "Canada" },
@@ -182,7 +175,7 @@ const Form = () => {
           defaultValue={{ value: "OT", label: "Ottawa" }}
           render={({ field }) => (
             <Select
-              className="m-2"
+              className="my-2 w-100"
               {...field}
               options={
                 country.label === "Canada"
@@ -202,7 +195,7 @@ const Form = () => {
         />
         {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
 
-        <CButton className="m-2" type="submit">
+        <CButton className="my-2 w-100" type="submit">
           {editIndex !== -1 ? "Update User" : "Add User"}
         </CButton>
       </CForm>
