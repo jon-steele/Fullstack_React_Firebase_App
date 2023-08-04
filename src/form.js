@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 
 const Form = () => {
   const { handleSubmit, control, errors, reset } = useForm();
@@ -51,7 +51,9 @@ const Form = () => {
           defaultValue=""
           render={({ field }) => <input type="date" {...field} />}
         />
-        {errors !== undefined && errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
+        {errors !== undefined && errors.dateOfBirth && (
+          <p>{errors.dateOfBirth.message}</p>
+        )}
 
         <Controller
           name="country"
@@ -65,7 +67,9 @@ const Form = () => {
             </select>
           )}
         />
-        {errors !== undefined && errors.country && <p>{errors.country.message}</p>}
+        {errors !== undefined && errors.country && (
+          <p>{errors.country.message}</p>
+        )}
 
         <Controller
           name="city"
@@ -74,7 +78,7 @@ const Form = () => {
           render={({ field }) => (
             <select {...field}>
               <option value="">Select City</option>
-              {field.value === 'Canada' ? (
+              {field.value === "Canada" ? (
                 <>
                   <option value="Ottawa">Ottawa</option>
                   <option value="Toronto">Toronto</option>
@@ -90,7 +94,9 @@ const Form = () => {
         />
         {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
 
-        <button type="submit">{editIndex !== -1 ? 'Update User' : 'Add User'}</button>
+        <button type="submit">
+          {editIndex !== -1 ? "Update User" : "Add User"}
+        </button>
       </form>
 
       <h2>Users:</h2>
