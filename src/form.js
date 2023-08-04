@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useEffect } from 'react';
 
 const Form = () => {
-  const { handleSubmit, control, errors, reset } = useForm();
+  const { handleSubmit, control, errors, reset, watch } = useForm();
   const [users, setUsers] = useState([]);
   const [editIndex, setEditIndex] = useState(-1);
+  const [country, setCountry] = useState('Canada');
+  const watchCountry = watch('country', 'Canada');
+
+  useEffect(() => {
+    setCountry(watchCountry);
+  }, [watchCountry]);
 
   const onSubmit = (data) => {
     if (editIndex !== -1) {
@@ -54,11 +61,10 @@ const Form = () => {
         {errors !== undefined && errors.dateOfBirth && (
           <p>{errors.dateOfBirth.message}</p>
         )}
-
         <Controller
           name="country"
           control={control}
-          defaultValue=""
+          defaultValue="Canada"
           render={({ field }) => (
             <select {...field}>
               <option value="">Select Country</option>
@@ -67,9 +73,6 @@ const Form = () => {
             </select>
           )}
         />
-        {errors !== undefined && errors.country && (
-          <p>{errors.country.message}</p>
-        )}
 
         <Controller
           name="city"
@@ -78,7 +81,7 @@ const Form = () => {
           render={({ field }) => (
             <select {...field}>
               <option value="">Select City</option>
-              {field.value === "Canada" ? (
+              {country === "Canada" ? (
                 <>
                   <option value="Ottawa">Ottawa</option>
                   <option value="Toronto">Toronto</option>
