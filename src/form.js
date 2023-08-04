@@ -10,16 +10,16 @@ import {
   Timestamp,
   deleteDoc,
 } from "firebase/firestore";
-import { db } from "./firebase"; // Import the db from firebase.js
+import { db } from "./firebase";
+import Select from "react-select";
 
 const Form = () => {
-  const { handleSubmit, control, errors, reset, watch } = useForm();
+  const { handleSubmit, control, errors, reset, watch, setValue } = useForm();
   const [users, setUsers] = useState([]);
   const [editIndex, setEditIndex] = useState(-1);
   const [country, setCountry] = useState("Canada");
   const watchCountry = watch("country", "Canada");
 
-  // useEffect monitors the country for conditional cities, and updates table with firestore
   useEffect(() => {
     setCountry(watchCountry);
 
@@ -43,10 +43,20 @@ const Form = () => {
   // Function that handles submitting new data
   const onSubmit = async (data) => {
     // Convert date string to JavaScript Date, then to Firestore Timestamp
-    data.dateOfBirth = Timestamp.fromDate(new Date(data.dateOfBirth));
-
+    let dob = new Date(`${data.dateOfBirth}T00:00:00Z`);
+    dob.setHours(dob.getHours() + 8); // Conversion buffer for Firestore
+    data.dateOfBirth = Timestamp.fromDate(dob);
+  
+    // Ensure `country` and `city` are objects with `value` and `label` properties
+    if (typeof data.country === "string") {
+      data.country = { value: data.country, label: data.country };
+    }
+    if (typeof data.city === "string") {
+      data.city = { value: data.city, label: data.city };
+    }
+  
     const usersCollectionRef = collection(db, "users");
-
+  
     if (editIndex !== -1) {
       // If we are editing an existing user, update the user in Firestore
       const docRef = doc(db, "users", users[editIndex].id);
@@ -55,18 +65,19 @@ const Form = () => {
       // If we are not editing, add the new user to Firestore
       await addDoc(usersCollectionRef, data);
     }
-
+  
     reset(); // Reset the form after submission
     setEditIndex(-1); // Reset editIndex after updating
   };
+  
 
   // Function to handle user deletion
   const handleDelete = async (index) => {
     // Delete the user from Firestore
     const userToDelete = users[index];
-    const userDocRef = doc(db, 'users', userToDelete.id);
+    const userDocRef = doc(db, "users", userToDelete.id);
     await deleteDoc(userDocRef);
-  
+
     // Delete the user from the local state
     const updatedUsers = [...users];
     updatedUsers.splice(index, 1);
@@ -78,16 +89,20 @@ const Form = () => {
     setEditIndex(index);
     const userToEdit = users[index];
   
+    // Convert Firestore Timestamp to JavaScript Date, then format as 'YYYY-MM-DD'
+    const dob = userToEdit.dateOfBirth.toDate().toISOString().split('T')[0];
+  
     // Create a new object that contains only the fields in your form
     const userFormValues = {
       name: userToEdit.name,
-      dateOfBirth: userToEdit.dateOfBirth.toDate(), // Convert Firestore Timestamp to JavaScript Date
+      dateOfBirth: dob,
       country: userToEdit.country,
-      city: userToEdit.city
+      city: userToEdit.city,
     };
-    
+  
     reset(userFormValues);
   };
+  
 
   return (
     <div>
@@ -109,38 +124,56 @@ const Form = () => {
         {errors !== undefined && errors.dateOfBirth && (
           <p>{errors.dateOfBirth.message}</p>
         )}
+
         <Controller
           name="country"
           control={control}
-          defaultValue="Canada"
+          defaultValue={{ value: "CA", label: "Canada" }}
           render={({ field }) => (
-            <select {...field}>
-              <option value="">Select Country</option>
-              <option value="Canada">Canada</option>
-              <option value="USA">USA</option>
-            </select>
+            <Select
+              {...field}
+              options={[
+                { value: "CA", label: "Canada" },
+                { value: "US", label: "USA" },
+              ]}
+              isSearchable
+              onChange={(selectedOption) => {
+                setCountry(selectedOption.value);
+
+                // Reset city when country changes
+                if (selectedOption.value === "CA") {
+                  setValue("city", { value: "OT", label: "Ottawa" });
+                } else {
+                  setValue("city", { value: "LV", label: "Las Vegas" });
+                }
+
+                field.onChange(selectedOption);
+              }}
+            />
           )}
         />
 
         <Controller
           name="city"
           control={control}
-          defaultValue=""
+          defaultValue={{ value: "OT", label: "Ottawa" }}
           render={({ field }) => (
-            <select {...field}>
-              <option value="">Select City</option>
-              {country === "Canada" ? (
-                <>
-                  <option value="Ottawa">Ottawa</option>
-                  <option value="Toronto">Toronto</option>
-                </>
-              ) : (
-                <>
-                  <option value="Las Vegas">Las Vegas</option>
-                  <option value="Chicago">Chicago</option>
-                </>
-              )}
-            </select>
+            <Select
+              {...field}
+              options={
+                country.label === "Canada"
+                  ? [
+                      { value: "OT", label: "Ottawa" },
+                      { value: "TO", label: "Toronto" },
+                    ]
+                  : [
+                      { value: "LV", label: "Las Vegas" },
+                      { value: "CH", label: "Chicago" },
+                    ]
+              }
+              isSearchable
+              onChange={field.onChange}
+            />
           )}
         />
         {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
@@ -167,8 +200,8 @@ const Form = () => {
             <tr key={index}>
               <td>{user.name}</td>
               <td>{user.dateOfBirth.toDate().toDateString()}</td>
-              <td>{user.country}</td>
-              <td>{user.city}</td>
+              <td>{user.country.label}</td>
+              <td>{user.city.label}</td>
               <td>
                 <button onClick={() => handleEdit(index)}>Edit</button>
               </td>
