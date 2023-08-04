@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import Select from "react-select";
+import { CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CButton, CForm } from "@coreui/react";
 
 const Form = () => {
   const { handleSubmit, control, errors, reset, watch, setValue } = useForm();
@@ -69,7 +70,6 @@ const Form = () => {
     reset(); // Reset the form after submission
     setEditIndex(-1); // Reset editIndex after updating
   };
-  
 
   // Function to handle user deletion
   const handleDelete = async (index) => {
@@ -109,15 +109,14 @@ const Form = () => {
     reset(userFormValues);
   };
   
-
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <CForm onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="name"
           control={control}
           defaultValue=""
-          render={({ field }) => <input {...field} placeholder="Name" />}
+          render={({ field }) => <CFormInput {...field} placeholder="Name" />}
         />
         {errors !== undefined && errors.name && <p>{errors.name.message}</p>}
 
@@ -125,7 +124,7 @@ const Form = () => {
           name="dateOfBirth"
           control={control}
           defaultValue=""
-          render={({ field }) => <input type="date" {...field} />}
+          render={({ field }) => <CFormInput type="date" {...field} />}
         />
         {errors !== undefined && errors.dateOfBirth && (
           <p>{errors.dateOfBirth.message}</p>
@@ -184,40 +183,40 @@ const Form = () => {
         />
         {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
 
-        <button type="submit">
+        <CButton type="submit">
           {editIndex !== -1 ? "Update User" : "Add User"}
-        </button>
-      </form>
+        </CButton>
+      </CForm>
 
       <h2>Users:</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>DOB</th>
-            <th>Country</th>
-            <th>City</th>
-            <th>Edit</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
+      <CTable>
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell>Name</CTableHeaderCell>
+            <CTableHeaderCell>DOB</CTableHeaderCell>
+            <CTableHeaderCell>Country</CTableHeaderCell>
+            <CTableHeaderCell>City</CTableHeaderCell>
+            <CTableHeaderCell>Edit</CTableHeaderCell>
+            <CTableHeaderCell>Delete</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
           {users.map((user, index) => (
-            <tr key={index}>
-              <td>{user.name}</td>
-              <td>{user.dateOfBirth.toDate().toDateString()}</td>
-              <td>{user.country.label}</td>
-              <td>{user.city.label}</td>
-              <td>
-                <button onClick={() => handleEdit(index)}>Edit</button>
-              </td>
-              <td>
-                <button onClick={() => handleDelete(index)}>Delete</button>
-              </td>
-            </tr>
+            <CTableRow key={index}>
+              <CTableDataCell>{user.name}</CTableDataCell>
+              <CTableDataCell>{user.dateOfBirth.toDate().toDateString()}</CTableDataCell>
+              <CTableDataCell>{user.country.label}</CTableDataCell>
+              <CTableDataCell>{user.city.label}</CTableDataCell>
+              <CTableDataCell>
+                <CButton onClick={() => handleEdit(index)}>Edit</CButton>
+              </CTableDataCell>
+              <CTableDataCell>
+                <CButton onClick={() => handleDelete(index)}>Delete</CButton>
+              </CTableDataCell>
+            </CTableRow>
           ))}
-        </tbody>
-      </table>
+        </CTableBody>
+      </CTable>
     </div>
   );
 };
