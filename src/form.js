@@ -12,7 +12,17 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import Select from "react-select";
-import { CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell, CButton, CForm } from "@coreui/react";
+import {
+  CFormInput,
+  CTable,
+  CTableHead,
+  CTableRow,
+  CTableHeaderCell,
+  CTableBody,
+  CTableDataCell,
+  CButton,
+  CForm,
+} from "@coreui/react";
 
 const Form = () => {
   const { handleSubmit, control, errors, reset, watch, setValue } = useForm();
@@ -47,7 +57,7 @@ const Form = () => {
     let dob = new Date(`${data.dateOfBirth}T00:00:00Z`);
     dob.setHours(dob.getHours() + 8); // Conversion buffer for Firestore
     data.dateOfBirth = Timestamp.fromDate(dob);
-  
+
     // Ensure `country` and `city` are objects with `value` and `label` properties
     if (typeof data.country === "string") {
       data.country = { value: data.country, label: data.country };
@@ -55,9 +65,9 @@ const Form = () => {
     if (typeof data.city === "string") {
       data.city = { value: data.city, label: data.city };
     }
-  
+
     const usersCollectionRef = collection(db, "users");
-  
+
     if (editIndex !== -1) {
       // If we are editing an existing user, update the user in Firestore
       const docRef = doc(db, "users", users[editIndex].id);
@@ -66,7 +76,7 @@ const Form = () => {
       // If we are not editing, add the new user to Firestore
       await addDoc(usersCollectionRef, data);
     }
-  
+
     reset(); // Reset the form after submission
     setEditIndex(-1); // Reset editIndex after updating
   };
@@ -82,22 +92,22 @@ const Form = () => {
     const updatedUsers = [...users];
     updatedUsers.splice(index, 1);
     setUsers(updatedUsers);
-    
+
     reset(); // Reset the form to prevent association error
 
     if (editIndex === index) {
-        setEditIndex(-1);
-      }
+      setEditIndex(-1);
+    }
   };
 
   // Function to handle user edit
   const handleEdit = (index) => {
     setEditIndex(index);
     const userToEdit = users[index];
-  
+
     // Convert Firestore Timestamp to JavaScript Date, then format as 'YYYY-MM-DD'
-    const dob = userToEdit.dateOfBirth.toDate().toISOString().split('T')[0];
-  
+    const dob = userToEdit.dateOfBirth.toDate().toISOString().split("T")[0];
+
     // Create a new object that contains only the fields in your form
     const userFormValues = {
       name: userToEdit.name,
@@ -105,18 +115,23 @@ const Form = () => {
       country: userToEdit.country,
       city: userToEdit.city,
     };
-  
+
     reset(userFormValues);
   };
-  
+
   return (
-    <div>
-      <CForm onSubmit={handleSubmit(onSubmit)}>
+    <div className="d-flex flex-column">
+      <CForm
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-75 m-auto d-flex flex-column"
+      >
         <Controller
           name="name"
           control={control}
           defaultValue=""
-          render={({ field }) => <CFormInput {...field} placeholder="Name" />}
+          render={({ field }) => (
+            <CFormInput className="m-2" {...field} placeholder="Name" />
+          )}
         />
         {errors !== undefined && errors.name && <p>{errors.name.message}</p>}
 
@@ -124,7 +139,9 @@ const Form = () => {
           name="dateOfBirth"
           control={control}
           defaultValue=""
-          render={({ field }) => <CFormInput type="date" {...field} />}
+          render={({ field }) => (
+            <CFormInput className="m-2" type="date" {...field} />
+          )}
         />
         {errors !== undefined && errors.dateOfBirth && (
           <p>{errors.dateOfBirth.message}</p>
@@ -136,6 +153,7 @@ const Form = () => {
           defaultValue={{ value: "CA", label: "Canada" }}
           render={({ field }) => (
             <Select
+              className="m-2"
               {...field}
               options={[
                 { value: "CA", label: "Canada" },
@@ -164,6 +182,7 @@ const Form = () => {
           defaultValue={{ value: "OT", label: "Ottawa" }}
           render={({ field }) => (
             <Select
+              className="m-2"
               {...field}
               options={
                 country.label === "Canada"
@@ -183,40 +202,44 @@ const Form = () => {
         />
         {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
 
-        <CButton type="submit">
+        <CButton className="m-2" type="submit">
           {editIndex !== -1 ? "Update User" : "Add User"}
         </CButton>
       </CForm>
 
-      <h2>Users:</h2>
-      <CTable>
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell>Name</CTableHeaderCell>
-            <CTableHeaderCell>DOB</CTableHeaderCell>
-            <CTableHeaderCell>Country</CTableHeaderCell>
-            <CTableHeaderCell>City</CTableHeaderCell>
-            <CTableHeaderCell>Edit</CTableHeaderCell>
-            <CTableHeaderCell>Delete</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {users.map((user, index) => (
-            <CTableRow key={index}>
-              <CTableDataCell>{user.name}</CTableDataCell>
-              <CTableDataCell>{user.dateOfBirth.toDate().toDateString()}</CTableDataCell>
-              <CTableDataCell>{user.country.label}</CTableDataCell>
-              <CTableDataCell>{user.city.label}</CTableDataCell>
-              <CTableDataCell>
-                <CButton onClick={() => handleEdit(index)}>Edit</CButton>
-              </CTableDataCell>
-              <CTableDataCell>
-                <CButton onClick={() => handleDelete(index)}>Delete</CButton>
-              </CTableDataCell>
+      <div className="m-auto mt-5 w-75">
+        <h2>Users:</h2>
+        <CTable>
+          <CTableHead>
+            <CTableRow>
+              <CTableHeaderCell>Name</CTableHeaderCell>
+              <CTableHeaderCell>DOB</CTableHeaderCell>
+              <CTableHeaderCell>Country</CTableHeaderCell>
+              <CTableHeaderCell>City</CTableHeaderCell>
+              <CTableHeaderCell>Edit</CTableHeaderCell>
+              <CTableHeaderCell>Delete</CTableHeaderCell>
             </CTableRow>
-          ))}
-        </CTableBody>
-      </CTable>
+          </CTableHead>
+          <CTableBody>
+            {users.map((user, index) => (
+              <CTableRow key={index}>
+                <CTableDataCell>{user.name}</CTableDataCell>
+                <CTableDataCell>
+                  {user.dateOfBirth.toDate().toDateString()}
+                </CTableDataCell>
+                <CTableDataCell>{user.country.label}</CTableDataCell>
+                <CTableDataCell>{user.city.label}</CTableDataCell>
+                <CTableDataCell>
+                  <CButton onClick={() => handleEdit(index)}>Edit</CButton>
+                </CTableDataCell>
+                <CTableDataCell>
+                  <CButton onClick={() => handleDelete(index)}>Delete</CButton>
+                </CTableDataCell>
+              </CTableRow>
+            ))}
+          </CTableBody>
+        </CTable>
+      </div>
     </div>
   );
 };
