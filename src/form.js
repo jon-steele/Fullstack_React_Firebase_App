@@ -131,7 +131,21 @@ const Form = () => {
         <Controller
           name="name"
           control={control}
-          rules={{ required: "Name is required" }}
+          rules={{ 
+            required: "Name is required",
+            validate: (value) => {
+              const regex = /^[A-Za-z]+$/; // regex for checking if input contains only alphabetic characters
+              if (!regex.test(value)) {
+                  return "Name must contain only alphabetic characters";
+              }
+              if (value.length > 128) {
+                return "Name cannot be longer than 128 characters"
+              }
+              if (value.length < 2) {
+                return "Name must be at least 2 characters";
+              }
+            }
+          }}
           defaultValue=""
           render={({ field }) => (
             <>
@@ -154,7 +168,16 @@ const Form = () => {
             required: "Date of birth is required",
             validate: (value) => {
               const dob = new Date(`${value}T00:00:00Z`);
-              return !isNaN(dob.getTime()) || "Invalid date format";
+              if (dob.getFullYear() < 1900) {
+                return "Year must be 1900 or later";
+              }
+              if (dob > new Date()) {
+                return "Date of birth cannot be in the future";
+              }
+              if (dob.getFullYear > 9999) {
+                return "Year cannot be more than 4 digits";
+              }
+              return true;
             },
           }}
           defaultValue=""
