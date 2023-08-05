@@ -134,7 +134,7 @@ const Form = () => {
           rules={{ 
             required: "Name is required",
             validate: (value) => {
-              const regex = /^[A-Za-z]+$/; // regex for checking if input contains only alphabetic characters
+              const regex = /^[A-Za-z\s]+$/; // regex for checking if input contains only alphabetic characters and spaces
               if (!regex.test(value)) {
                   return "Name must contain only alphabetic characters";
               }
