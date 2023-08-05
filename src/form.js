@@ -59,6 +59,9 @@ const Form = () => {
   const onSubmit = async (data) => {
     try {
       let dob = new Date(`${data.dateOfBirth}T00:00:00Z`);
+      if (isNaN(dob.getTime())) {
+        throw new Error("Invalid date format");
+      }
       dob.setHours(dob.getHours() + 8);
       data.dateOfBirth = Timestamp.fromDate(dob);
 
@@ -141,11 +144,19 @@ const Form = () => {
             </>
           )}
         />
+        {errors.name && <p>{errors.name.message}</p>}
+
 
         <Controller
           name="dateOfBirth"
           control={control}
-          rules={{ required: "Date of birth is required" }}
+          rules={{ 
+            required: "Date of birth is required",
+            validate: (value) => {
+              const dob = new Date(`${value}T00:00:00Z`);
+              return !isNaN(dob.getTime()) || "Invalid date format";
+            },
+          }}
           defaultValue=""
           render={({ field }) => (
             <>
@@ -154,6 +165,8 @@ const Form = () => {
             </>
           )}
         />
+        {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
+
 
         <Controller
           name="country"
