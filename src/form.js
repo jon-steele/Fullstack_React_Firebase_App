@@ -123,7 +123,7 @@ const Form = () => {
     <div className="d-flex flex-column m-auto col-12 col-md-9">
       <CForm
         onSubmit={handleSubmit(onSubmit)}
-        className="w-100 m-auto d-flex flex-column mt-3"
+        className="w-100 m-auto d-flex flex-column mt-3 px-2"
       >
         <Controller
           name="name"
@@ -223,7 +223,7 @@ const Form = () => {
         </CButton>
       </CForm>
 
-      <div className="m-auto mt-5 ">
+      <div className="m-auto mt-5 px-2">
         <h2>Users:</h2>
         <CTable>
           <CTableHead>
