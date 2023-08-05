@@ -256,7 +256,7 @@ const Form = () => {
         </CButton>
       </CForm>
 
-      <div className="m-auto mt-5 px-2">
+      <div className="m-auto mt-5 px-2 w-100">
         <h2>Users:</h2>
         <CTable>
           <CTableHead>
@@ -272,7 +272,7 @@ const Form = () => {
           <CTableBody>
             {users.map((user, index) => (
               <CTableRow key={index}>
-                <CTableDataCell>{user.name}</CTableDataCell>
+                <CTableDataCell style={{ wordBreak: "break-all" }}>{user.name}</CTableDataCell>
                 <CTableDataCell>
                   {user.dateOfBirth.toDate().toDateString()}
                 </CTableDataCell>
