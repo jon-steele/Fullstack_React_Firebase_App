@@ -168,7 +168,7 @@ const Form = () => {
             required: "Date of birth is required",
             validate: (value) => {
               const dob = new Date(`${value}T00:00:00Z`);
-              if (dob.getFullYear() < 1900) {
+              if (dob.getFullYear() <= 1900) {
                 return "Year must be 1900 or later";
               }
               if (dob > new Date()) {
