@@ -141,7 +141,6 @@ const Form = () => {
             </>
           )}
         />
-        {errors.name && <p>{errors.name.message}</p>}
 
         <Controller
           name="dateOfBirth"
@@ -155,7 +154,6 @@ const Form = () => {
             </>
           )}
         />
-        {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
 
         <Controller
           name="country"
@@ -216,7 +214,6 @@ const Form = () => {
             </>
           )}
         />
-        {errors !== undefined && errors.name && <p>{errors.city.message}</p>}
 
         <CButton className="my-2 w-100" type="submit">
           {editIndex !== -1 ? "Update User" : "Add User"}
