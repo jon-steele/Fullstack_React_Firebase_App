@@ -1,5 +1,5 @@
 import "@coreui/coreui/dist/css/coreui.min.css";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useUserActions } from "./useUserActions";
 
