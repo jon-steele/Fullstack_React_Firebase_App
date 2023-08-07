@@ -1,26 +1,18 @@
-// UserForm is a react component that compartamentalizes the user form in App.
-
 import React from "react";
-import { useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Select from "react-select";
 import { CFormInput, CButton, CForm } from "@coreui/react";
 
-const UserForm = ({ onSubmit, editIndex }) => {
-  const {
-    watch,
-    handleSubmit,
-    control,
-    formState: { errors },
-    setValue,
-  } = useForm();
-  const [country, setCountry] = useState("Canada");
-  const watchCountry = watch("country", "Canada");
-
-  useEffect(() => {
-    setCountry(watchCountry);
-  }, [watchCountry]);
-
+const UserForm = ({
+  control,
+  errors,
+  handleSubmit,
+  onSubmit,
+  setCountry,
+  country,
+  setValue,
+  editIndex,
+}) => {
   return (
     <CForm
       onSubmit={handleSubmit(onSubmit)}
