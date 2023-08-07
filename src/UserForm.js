@@ -1,5 +1,6 @@
 import React from "react";
-import { Controller } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 import Select from "react-select";
 import { CFormInput, CButton, CForm } from "@coreui/react";
 
@@ -8,11 +9,17 @@ const UserForm = ({
   errors,
   handleSubmit,
   onSubmit,
-  setCountry,
-  country,
   setValue,
   editIndex,
 }) => {
+  const { watch } = useForm();
+  const [country, setCountry] = useState("Canada");
+  const watchCountry = watch("country", "Canada");
+
+  useEffect(() => {
+    setCountry(watchCountry);
+  }, [watchCountry]);
+
   return (
     <CForm
       onSubmit={handleSubmit(onSubmit)}

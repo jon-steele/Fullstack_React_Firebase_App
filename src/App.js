@@ -13,21 +13,14 @@ const App = () => {
     control,
     formState: { errors },
     reset,
-    watch,
     setValue,
   } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
-  const [country, setCountry] = useState("Canada");
-  const watchCountry = watch("country", "Canada");
   const { users, onSubmit, handleDelete, handleEdit } = useUserActions(
     reset,
     editIndex,
     setEditIndex
   );
-
-  useEffect(() => {
-    setCountry(watchCountry);
-  }, [watchCountry]);
 
   return (
     <div className="d-flex flex-column m-auto col-12 col-md-9">
@@ -36,8 +29,6 @@ const App = () => {
         errors={errors}
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
-        setCountry={setCountry}
-        country={country}
         setValue={setValue}
         editIndex={editIndex}
       />
