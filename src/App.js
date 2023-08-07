@@ -8,6 +8,7 @@ import UserTable from "./UserTable";
 import UserForm from "./UserForm";
 
 const App = () => {
+  // I leave form parameters in the parent component so both child components (Table and Form) have the same instance 
   const {
     handleSubmit,
     control,
@@ -15,9 +16,9 @@ const App = () => {
     reset,
     watch,
     setValue,
-  } = useForm();
-  const [editIndex, setEditIndex] = useState(-1);
-  const [country, setCountry] = useState("Canada");
+  } = useForm(); 
+  const [editIndex, setEditIndex] = useState(-1); // Used for naming submit button either update user or add user
+  const [country, setCountry] = useState("Canada"); // Used for conditional cities
   const watchCountry = watch("country", "Canada");
   const { users, onSubmit, handleDelete, handleEdit } = useUserActions(
     reset,
@@ -42,7 +43,6 @@ const App = () => {
         editIndex={editIndex}
       />
       <UserTable
-        className="m-auto mt-5 px-2 w-100"
         users={users}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
