@@ -27,12 +27,18 @@ export const useUserActions = (reset, editIndex, setEditIndex) => {
       } else {
         await add(data);
       }
-
-      reset();
+      
       setEditIndex(-1);
     } catch (error) {
       console.error("Error submitting form: ", error);
     }
+    
+    reset({
+      name: "", 
+      dateOfBirth: "", 
+      country: { value: "CA", label: "Canada" },
+      city: { value: "OT", label: "Ottawa" }
+    });
   };
 
   const handleDelete = async (index) => {
