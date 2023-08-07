@@ -14,15 +14,11 @@ import { db } from "./firebase";
 import Select from "react-select";
 import {
   CFormInput,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
   CButton,
   CForm,
 } from "@coreui/react";
+
+import UserTable from "./UserTable";
 
 const Form = () => {
   const {
@@ -131,20 +127,20 @@ const Form = () => {
         <Controller
           name="name"
           control={control}
-          rules={{ 
+          rules={{
             required: "Name is required",
             validate: (value) => {
               const regex = /^[A-Za-z\s]+$/; // regex for checking if input contains only alphabetic characters and spaces
               if (!regex.test(value)) {
-                  return "Name must contain only alphabetic characters";
+                return "Name must contain only alphabetic characters";
               }
               if (value.length > 128) {
-                return "Name cannot be longer than 128 characters"
+                return "Name cannot be longer than 128 characters";
               }
               if (value.length < 2) {
                 return "Name must be at least 2 characters";
               }
-            }
+            },
           }}
           defaultValue=""
           render={({ field }) => (
@@ -160,11 +156,10 @@ const Form = () => {
         />
         {errors.name && <p>{errors.name.message}</p>}
 
-
         <Controller
           name="dateOfBirth"
           control={control}
-          rules={{ 
+          rules={{
             required: "Date of birth is required",
             validate: (value) => {
               const dob = new Date(`${value}T00:00:00Z`);
@@ -189,7 +184,6 @@ const Form = () => {
           )}
         />
         {errors.dateOfBirth && <p>{errors.dateOfBirth.message}</p>}
-
 
         <Controller
           name="country"
@@ -257,37 +251,11 @@ const Form = () => {
       </CForm>
 
       <div className="m-auto mt-5 px-2 w-100">
-        <h2>Users:</h2>
-        <CTable>
-          <CTableHead>
-            <CTableRow>
-              <CTableHeaderCell>Name</CTableHeaderCell>
-              <CTableHeaderCell>DOB</CTableHeaderCell>
-              <CTableHeaderCell>Country</CTableHeaderCell>
-              <CTableHeaderCell>City</CTableHeaderCell>
-              <CTableHeaderCell>Edit</CTableHeaderCell>
-              <CTableHeaderCell>Delete</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            {users.map((user, index) => (
-              <CTableRow key={index}>
-                <CTableDataCell style={{ wordBreak: "break-all" }}>{user.name}</CTableDataCell>
-                <CTableDataCell>
-                  {user.dateOfBirth.toDate().toDateString()}
-                </CTableDataCell>
-                <CTableDataCell>{user.country.label}</CTableDataCell>
-                <CTableDataCell>{user.city.label}</CTableDataCell>
-                <CTableDataCell>
-                  <CButton onClick={() => handleEdit(index)}>Edit</CButton>
-                </CTableDataCell>
-                <CTableDataCell>
-                  <CButton onClick={() => handleDelete(index)}>Delete</CButton>
-                </CTableDataCell>
-              </CTableRow>
-            ))}
-          </CTableBody>
-        </CTable>
+        <UserTable
+          users={users}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       </div>
     </div>
   );
