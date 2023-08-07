@@ -1,3 +1,5 @@
+// UserTable is a React component used to display user information in a table format.
+
 import {
     CTable,
     CTableHead,

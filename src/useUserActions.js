@@ -1,3 +1,5 @@
+// useUserActions hold the onSubmit, handleDelete, and handleEdit functions for the UserForm component buttons.
+
 import { Timestamp } from "firebase/firestore";
 import { useFirebase } from "./useFirebase";
 

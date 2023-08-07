@@ -1,3 +1,5 @@
+// useFirebase holds CRUD functions for database interactions.
+
 import { useState, useEffect } from "react";
 import { db } from "./firebase";
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
