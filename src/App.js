@@ -8,7 +8,13 @@ import UserTable from "./UserTable";
 import UserForm from "./UserForm";
 
 const App = () => {
-  const { reset } = useForm();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+    setValue,
+  } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const { users, onSubmit, handleDelete, handleEdit } = useUserActions(
     reset,
@@ -18,7 +24,14 @@ const App = () => {
 
   return (
     <div className="d-flex flex-column m-auto col-12 col-md-9">
-      <UserForm onSubmit={onSubmit} editIndex={editIndex} />
+      <UserForm
+        control={control}
+        errors={errors}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        setValue={setValue}
+        editIndex={editIndex}
+      />
       <UserTable
         className="m-auto mt-5 px-2 w-100"
         users={users}
