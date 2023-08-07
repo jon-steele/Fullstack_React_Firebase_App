@@ -1,3 +1,5 @@
+// UserForm is a react component that compartamentalizes the user form in App.
+
 import React from "react";
 import { useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
