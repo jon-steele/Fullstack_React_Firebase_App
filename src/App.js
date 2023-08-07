@@ -41,14 +41,12 @@ const App = () => {
         setValue={setValue}
         editIndex={editIndex}
       />
-
-      <div className="m-auto mt-5 px-2 w-100">
-        <UserTable
-          users={users}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        />
-      </div>
+      <UserTable
+        className="m-auto mt-5 px-2 w-100"
+        users={users}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
