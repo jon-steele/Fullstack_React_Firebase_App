@@ -1,3 +1,5 @@
+// UserForm is a react component that holds a form containing Name, DOB, Country, and City inputs. 
+
 import React from "react";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
